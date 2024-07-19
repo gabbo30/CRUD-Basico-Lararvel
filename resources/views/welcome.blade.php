@@ -8,9 +8,30 @@
 
 </head>
 <body id="app">
+    <script>
+        var res=function()
+        {
+            var not=confirm("¿Deseas eliminar el registro?");
+            return not;
+        }
+    </script>
     <h1 class="text-center p-3">CRUD Laravel </h1>
 
     <div class="p-5 table-responsive">
+        @if (session("Bien"))
+            <div class="alert alert-success alert-dismissible fade show">
+                {{session("Bien")}}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+
+        @if (session("Mal"))
+            <div class="alert alert-danger alert-dismissible fade show">
+                {{session("Mal")}}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+        <button data-bs-toggle="modal" data-bs-target="#agregar_producto" class="btn btn-primary p-b-3">Agregar Producto</button>
         <table class="table table'striped">
             <thead>
                 <tr>
@@ -28,31 +49,88 @@
                         <td>${{$item->price}}</td>
                         <td>{{$item->stock}}</td>
                         <td>
-                            <a href="#" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#exampleModal"> Editar </a>
-                            <a href="#" class="btn btn-danger btn-sm"> Eliminar</a>
+                            <a href="#" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editar_producto{{$item->id}}"> Editar </a>
+                            <a href='{{route("crud.delete", $item->id)}}' onclick="return res()" class="btn btn-danger btn-sm"> Eliminar</a>
                         </td>
                     </tr>
+
+                    <!-- Modal Edit -->
+                    <div class="modal fade" id="editar_producto{{$item->id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="exampleModalLabel">Editar Producto</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form action='{{route("crud.update")}}' method="post">
+                                    @csrf
+                                    <div class="mb-3">
+                                        <!-- <label for="codigo" class="form-label">Código Producto:</label> -->
+                                        <input type="hidden" class="form-control" id="codigo" name="codigo" value="{{$item->id}}">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="nombre" class="form-label">Nombre De Producto:</label>
+                                        <input type="text" class="form-control" id="nombre" name="nombre" value="{{$item->product_name}}">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="precio" class="form-label">Precio:</label>
+                                        <input type="text" class="form-control" id="precio" name="precio" value="{{$item->price}}">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="stock" class="form-label">Stock:</label>
+                                        <input type="number" class="form-control" id="stock" name="stock" value="{{$item->stock}}">
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Modificar</button>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                <!-- <button type="button" class="btn btn-primary">Modificar</button> -->
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+
                 @endforeach
             </tbody>
         </table>
-
-        <!-- Modal -->
-        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <!-- Modal Add -->
+        <div class="modal fade" id="agregar_producto" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Agregar Producto</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action='{{route("crud.create")}}' method="post">
+                        @csrf
+                        <!-- <div class="mb-3">
+                            <label for="codigo" class="form-label">Código Producto:</label>
+                            <input type="text" class="form-control" id="codigo" name="codigo">
+                        </div> -->
+                        <div class="mb-3">
+                            <label for="nombre" class="form-label">Nombre De Producto:</label>
+                            <input type="text" class="form-control" id="nombre" name="nombre">
+                        </div>
+                        <div class="mb-3">
+                            <label for="precio" class="form-label">Precio:</label>
+                            <input type="text" class="form-control" id="precio" name="precio">
+                        </div>
+                        <div class="mb-3">
+                            <label for="stock" class="form-label">Stock:</label>
+                            <input type="text" class="form-control" id="stock" name="stock">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Agregar</button>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <!-- <button type="button" class="btn btn-primary">Modificar</button> -->
+                </div>
+                </div>
             </div>
-            <div class="modal-body">
-                ...
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
-            </div>
-            </div>
-        </div>
         </div>
     </div>
 
