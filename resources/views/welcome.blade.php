@@ -148,6 +148,15 @@
                 }
             }
         }).mount('#app');
+        import axios from 'axios';
+
+        axios.get('/api/products')
+            .then(response => {
+                console.log(response.data); // Aquí tienes los datos de tus productos
+            })
+            .catch(error => {
+                console.error(error);
+            });
     </script>
 </body>
 </html>

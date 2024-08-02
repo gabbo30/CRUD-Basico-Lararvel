@@ -5,15 +5,23 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Model;
+use App\Models\Product;
 
 class CrudController extends Controller
 {
     //
-    public function index()
+    /* public function index()
     {
         $datos = DB::select(" select * from products ");
         return view("welcome")->with("datos", $datos);
-    }
+    } */
+   // Mostrar una lista de productos
+   public function index()
+   {
+       $productos = Product::all(); // Obtiene todos los productos usando Eloquent
+       return response()->json($productos); // Devuelve los datos en formato JSON
+   }
 
     public function create(Request $request)
     {
