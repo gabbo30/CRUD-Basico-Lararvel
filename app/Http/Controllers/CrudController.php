@@ -11,68 +11,68 @@ use App\Models\Product;
 class CrudController extends Controller
 {
     //
-    /* public function index()
+    public function index()
     {
-        $datos = DB::select(" select * from products ");
+        // $datos = DB::select(" select * from products ");
+        $datos = Product::all();
         return view("welcome")->with("datos", $datos);
-    } */
-   // Mostrar una lista de productos
-   public function index()
+    }
+   
+   /* public function index() //Aun no apto para ser consumido por VueJS
    {
        $productos = Product::all(); // Obtiene todos los productos usando Eloquent
        return response()->json($productos); // Devuelve los datos en formato JSON
-   }
+   } */
 
     public function create(Request $request)
     {
-        $sql=DB::insert(" insert into products (product_name, price, stock) values (?, ?, ?) ",[
-            $request->nombre,
-            $request->precio,
-            $request->stock
+        $sql = Product::create([
+            'product_name' => $request->nombre,
+            'price' => $request->precio,
+            'stock' => $request->stock,
         ]);
         if ($sql==true)
         {
-            return back()->with("Bien", "Producto registrado");
+            return redirect()->route('crud.index')->with("Bien", "Producto registrado");
         }
         else
         {
-            return back()->with("Error", "Producto NO registrado");
+            return redirect()->route('crud.index')->with("Error", "Producto NO registrado");
         }
-        // return 0;
     }
 
     public function update(Request $request)
     {
-        $sql=DB::insert(" update products set product_name = ?, price = ?, stock = ? where id = ? ",[
-            $request->nombre,
-            $request->precio,
-            $request->stock,
-            $request->codigo
+        $sql = Product::find($request->codigo);
+        $sql->update([
+            'product_name' => $request->nombre,
+            'price' => $request->precio,
+            'stock' => $request->stock,
         ]);
         if ($sql==true)
         {
-            return back()->with("Bien", "Producto actualizado");
+            return redirect()->route('crud.index')->with("Bien", "Producto actualizado");
         }
         else
         {
-            return back()->with("Error", "Producto NO actualizado");
+            return redirect()->route('crud.index')->with("Error", "Producto NO actualizado");
         }
-        // return 0;
     }
 
     public function delete($id)
     {
-        $sql=DB::delete(" delete from products where id = ?",[
-            $id
-        ]);
-        if ($sql==true)
+        $product = Product::find($id);
+
+        if ($product)
         {
-            return back()->with("Bien", "Producto Eliminado");
+            $product->delete();
+            return redirect()->route('crud.index')->with('success', 'Producto eliminado exitosamente');
         }
         else
         {
-            return back()->with("Error", "Producto NO Eliminado");
+            return redirect()->route('crud.index')->with('error', 'Producto no encontrado');
         }
     }
+    // Eloquent ORM Implementado Correctamente
 
 }
